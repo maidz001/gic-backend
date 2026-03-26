@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+target/
+
+# Environment
+.env
+backend/.env
+frontend/.env
+
+# Build
+frontend/dist/
+backend/target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VietQR - Chuyển khoản</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f4c81 0%, #1a73e8 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .bank-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .value {
+            color: #333;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .bank-name {
+            color: #0f4c81;
+            font-size: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0f4c81;
+            box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #0f4c81 0%, #1a73e8 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(15, 76, 129, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .qr-section {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .qr-section.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-code img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .amount-display {
+            font-size: 32px;
+            color: #0f4c81;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+
+        .back-button {
+            background: #6c757d;
+            margin-top: 15px;
+        }
+
+        .back-button:hover {
+            background: #5a6268;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💳 Chuyển khoản VietQR</h1>
+        
+        <div class="bank-info">
+            <div class="info-row">
+                <span class="label">Ngân hàng:</span>
+                <span class="value bank-name">BIDV</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Số tài khoản:</span>
+                <span class="value">5130855767</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Chủ tài khoản:</span>
+                <span class="value">DOAN NGUYEN THU THAO</span>
+            </div>
+        </div>
+
+        <div id="inputSection">
+            <div class="input-group">
+                <label for="amount">Số tiền (VNĐ)</label>
+                <input 
+                    type="text" 
+                    id="amount" 
+                    placeholder="Nhập số tiền..." 
+                    inputmode="numeric"
+                >
+                <div class="error" id="error">Vui lòng nhập số tiền hợp lệ</div>
+            </div>
+
+            <div class="input-group">
+                <label for="message">Nội dung chuyển khoản (tùy chọn)</label>
+                <input 
+                    type="text" 
+                    id="message" 
+                    placeholder="Nhập nội dung..."
+                    maxlength="50"
+                >
+            </div>
+
+            <button onclick="generateQR()">Tạo mã QR</button>
+        </div>
+
+        <div id="qrSection" class="qr-section">
+            <div class="amount-display" id="displayAmount"></div>
+            <div class="qr-code">
+                <img id="qrImage" src="" alt="VietQR Code">
+            </div>
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">Quét mã QR để chuyển khoản</p>
+            <button class="back-button" onclick="goBack()">Quay lại</button>
+        </div>
+    </div>
+
+    <script>
+        const amountInput = document.getElementById('amount');
+        const messageInput = document.getElementById('message');
+        const errorDiv = document.getElementById('error');
+
+        // Format số tiền khi nhập
+        amountInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^\d]/g, '');
+            if (value) {
+                e.target.value = parseInt(value).toLocaleString('vi-VN');
+            }
+            errorDiv.style.display = 'none';
+        });
+
+        function generateQR() {
+            const amountStr = amountInput.value.replace(/[^\d]/g, '');
+            const amount = parseInt(amountStr);
+            
+            if (!amount || amount <= 0) {
+                errorDiv.style.display = 'block';
+                amountInput.focus();
+                return;
+            }
+
+            const accountNo = '5130855767';
+            const accountName = 'DOAN NGUYEN THU THAO';
+            const bankCode = '970418'; // Mã ngân hàng BIDV
+            const message = messageInput.value || 'Chuyen khoan';
+
+            // Tạo URL VietQR theo chuẩn
+            const qrContent = `https://img.vietqr.io/image/${bankCode}-${accountNo}-compact2.jpg?amount=${amount}&addInfo=${encodeURIComponent(message)}&accountName=${encodeURIComponent(accountName)}`;
+
+            // Hiển thị QR
+            document.getElementById('qrImage').src = qrContent;
+            document.getElementById('displayAmount').textContent = amount.toLocaleString('vi-VN') + ' VNĐ';
+            
+            document.getElementById('inputSection').style.display = 'none';
+            document.getElementById('qrSection').classList.add('show');
+        }
+
+        function goBack() {
+            document.getElementById('inputSection').style.display = 'block';
+            document.getElementById('qrSection').classList.remove('show');
+        }
+
+        // Cho phép Enter để tạo QR
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateQR();
+            }
+        });
+
+        amountInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateQR();
+            }
+        });
+    </script>
+</body>
+</html>

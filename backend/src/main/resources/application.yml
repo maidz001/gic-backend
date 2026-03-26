@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${SUPABASE_DB_URL}?sslmode=require&prepareThreshold=0
+    username: postgres
+    password: ${SUPABASE_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 10000
+      maximum-pool-size: 5
+      minimum-idle: 1
+
+  jackson:
+    property-naming-strategy: LOWER_CAMEL_CASE
+    default-property-inclusion: NON_NULL
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+groq:
+  api-key: ${GROQ_API_KEY:}
+  url: https://api.groq.com/openai/v1/chat/completions
+  model: llama-3.1-8b-instant
+
+app:
+  jwt:
+    secret: ${SUPABASE_JWT_SECRET}
+  notification:
+    email: ${NOTIFICATION_EMAIL:}
+
+logging:
+  level:
+    com.taskmanager: DEBUG
+    org.springframework.web: INFO
