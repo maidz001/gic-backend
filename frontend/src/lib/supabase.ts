@@ -7,5 +7,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export const isSupabaseConfigured = () => {
   const url = import.meta.env.VITE_SUPABASE_URL
-  return url && url !== '' && !url.includes('placeholder')
+  return !!url && url !== '' && !url.includes('placeholder')
 }
